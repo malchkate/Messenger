@@ -1,4 +1,4 @@
 Messenger
 =========
-NOOOOOOW
+NOOW
 Messenger on Java. Project.
