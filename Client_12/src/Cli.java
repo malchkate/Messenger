@@ -27,7 +27,7 @@ public class Cli {
             nameClient = login.nameClient;
             System.setOut(new PrintStream(System.out, true, "utf-8"));
             System.out.println("Client starting..." );
-            Socket s = new Socket("25.96.213.238",4445 );   //"25.96.213.238"
+            Socket s = new Socket("localhost", 4448);   //"25.96.213.238" "25.166.62.66"
             System.out.println("Connect to server...");
             Thread threadIn = new Thread(new SocketInputThread(s));
             Thread threadOut = new Thread(new SocketOutputThread(s, nameClient));
@@ -46,21 +46,26 @@ public class Cli {
     }
 }
 
-
-
 class SocketInputThread implements Runnable{
 
     private Socket s = null;
     private Scanner in = null;
     private PrintWriter out = null;
     private boolean exit = true;
-    private String inMessage = null;
+    private boolean newMessage;
+    private static String inMessage = null;
     private String outMessage;
     private ArrayList<String> listClients;
+    private ArrayList<String> listMessage;
 
     public SocketInputThread(Socket s ) {
         this.s = s;
         listClients = new ArrayList<String>();
+        listMessage = new ArrayList<String>();
+    }
+
+    public static String getInMessage() {
+        return inMessage;
     }
 
     @Override
@@ -70,18 +75,22 @@ class SocketInputThread implements Runnable{
             in = new Scanner(s.getInputStream());
             while(true){
                 if(in.hasNext()){
+                    newMessage = true;
                     inMessage = in.nextLine();
                     if (inMessage.charAt(0) == '*'){
                         inMessage = inMessage.substring(1);
                         if (inMessage.equals("exit")){
                             JFrameChat.showClients(listClients);
                             listClients.clear();
+                        } else {
+                            listClients.add(inMessage);
                         }
-                        listClients.add(inMessage);
-                    }else{
-                        System.out.println( inMessage);
+                    } else {
+                        System.out.println(inMessage);
+                        listMessage.add(inMessage);
                     }
                 }
+                newMessage = false;
             }
         } catch (IOException ex) {
             Logger.getLogger(SocketInputThread.class.getName()).log(Level.SEVERE, null, ex);
@@ -92,20 +101,23 @@ class SocketInputThread implements Runnable{
 
 
 
-class SocketOutputThread implements Runnable
-{
+class SocketOutputThread implements Runnable {
     private String nameClient = "";
     private Socket s = null;
     private Scanner in = null;
     private PrintWriter out = null;
     private boolean exit = true;
     private String inMessage = null;
-    private String outMessage = null;
+    private static String outMessage = null;
     private boolean firstMess = true;
 
     public SocketOutputThread(Socket s, String name) {
         this.s = s;
         nameClient = name;
+    }
+
+    public static String getoutMessage() {
+        return outMessage;
     }
 
     @Override
@@ -118,10 +130,10 @@ class SocketOutputThread implements Runnable
                     outMessage = "*" + nameClient;
                     firstMess = false;
                 }else{
-                outMessage = buffer.readLine();
-                outMessage = nameClient + ":" + outMessage;
+                    outMessage = buffer.readLine();
+                    outMessage = nameClient + ":" + outMessage;
 
-                System.out.println( outMessage);
+                    System.out.println(outMessage);
                 }
                 out.println(outMessage);
                 out.flush();
@@ -132,4 +144,3 @@ class SocketOutputThread implements Runnable
     }
 
 }
-

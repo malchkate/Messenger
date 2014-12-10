@@ -25,18 +25,16 @@ public class JFrameChat extends JFrame{
     }
 
     public static void showClients(ArrayList<String> listCli){
-        while(true) {
-            try {
-                Thread.sleep(1000);
-                jTextAreaListOfLogin.setText(null);
-                for (String str : listCli) {
-                    jTextAreaListOfLogin.append(str + "\n");
-                    System.out.println(str);
-                }
-            } catch (InterruptedException e) {
-                e.printStackTrace();
+       try {
+            Thread.sleep(100);
+            jTextAreaListOfLogin.setText(null);
+            for (String str : listCli) {
+                jTextAreaListOfLogin.append(str + "\n");
+                System.out.println(str);
             }
-        }
+       } catch (InterruptedException e) {
+            e.printStackTrace();
+       }
     }
 
     public static void showMessage() {

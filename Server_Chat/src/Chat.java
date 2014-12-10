@@ -16,7 +16,7 @@ public class Chat{
         }
         System.out.println("Program starting...");
         try {
-            ServerSocket ss = new ServerSocket(4444);
+            ServerSocket ss = new ServerSocket(4448);
             System.out.println("Server starting...");
             while(true){
                 Socket s = ss.accept();
@@ -51,7 +51,6 @@ class ListSocket {
 class SocketThread implements Runnable {
 
     private Socket s = null;
-    private boolean except;
     private String nameClient ;
     private Scanner in = null;
     private PrintWriter out = null;
@@ -77,9 +76,6 @@ class SocketThread implements Runnable {
 
             while (exit) {
                 inMessage = in.nextLine();
-                if (inMessage.equals(nameClient.substring(1) + ":" + "null")) {
-                    break;
-                }
                 System.out.println("Server in:" + inMessage);
                 listSocket = ListSocket.getListSocket();
                 for (Socket socket : listSocket.keySet()) {
@@ -94,6 +90,7 @@ class SocketThread implements Runnable {
                 }
             }
 //            t.interrupt();
+            ListSocket.removeSocketWithList(s);
             in.close();
             out.close();
             s.close();
@@ -101,7 +98,6 @@ class SocketThread implements Runnable {
             Logger.getLogger(SocketThread.class.getName()).log(Level.SEVERE, null, ex);
         } catch (NoSuchElementException ex) {
             ListSocket.removeSocketWithList(s);
-            except = true;
         }
     }
 }
@@ -141,7 +137,7 @@ class ListOutputThread implements Runnable {
             }
 //            out.close();
         } catch(IOException ex) {
-            Logger.getLogger(SocketOutputThread.class.getName()).log(Level.SEVERE, null, ex);
+//            Logger.getLogger(SocketOutputThread.class.getName()).log(Level.SEVERE, null, ex);
         }
     }
 }
